@@ -1,9 +1,12 @@
-import numpy as np
 import torch.utils.data
 from torchvision import datasets, transforms
 
 from .trigger import get_backdoor_test_dataset, get_backdoor_train_dataset, GenerateTrigger
 
+import torch
+torch.manual_seed(47)
+import numpy as np
+np.random.seed(47)
 
 def get_dataloaders_simple(batch_size, train_ds_num, drop_last, is_shuffle):
     drop_last = drop_last

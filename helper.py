@@ -1,6 +1,7 @@
 import torch
+torch.manual_seed(47)
 import numpy as np
-
+np.random.seed(47)
 
 class SaveAndLoad():
     def __init__(self, path="./models/"):

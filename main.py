@@ -1,9 +1,6 @@
 import argparse
-import torch
 from pathlib import Path
 from train_and_validation import sl, sl_simple
-
-
 
 
 parser = argparse.ArgumentParser(description='BASL')

@@ -1,7 +1,6 @@
 import gc
 
 import matplotlib.pyplot as plt
-import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data
@@ -13,10 +12,11 @@ from helper import EarlyStopping
 
 import csv
 import gc
-import cv2
-import sys
-import os
 
+import torch
+torch.manual_seed(47)
+import numpy as np
+np.random.seed(47)
 
 class SLTrainAndValidation:
     def __init__(self, dataloaders, models, loss_fn, optimizers, lr_schedulers, early_stopping):

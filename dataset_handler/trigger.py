@@ -1,9 +1,11 @@
 import cv2
 import math
-import numpy as np
 import matplotlib.pyplot as plt
-import torch
 
+import torch
+torch.manual_seed(47)
+import numpy as np
+np.random.seed(47)
 
 def poison(img, trigger_obj, trig_ds, bd_opacity):
     """Poison the training samples by stamping the trigger."""

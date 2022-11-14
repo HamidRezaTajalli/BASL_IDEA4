@@ -3,7 +3,6 @@
 import gc
 
 import matplotlib.pyplot as plt
-import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils.data
@@ -13,6 +12,10 @@ from torchsummary import summary
 from dataset_handler import cifar10, fmnist, mnist
 from helper import EarlyStopping
 
+import torch
+torch.manual_seed(47)
+import numpy as np
+np.random.seed(47)
 
 class SL_Simple_TrainAndValidation:
     def __init__(self, dataloaders, models, loss_fn, optimizers, lr_schedulers, early_stopping):

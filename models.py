@@ -1,6 +1,10 @@
 import torch.nn as nn
 from torchvision import models
 
+import torch
+torch.manual_seed(47)
+import numpy as np
+np.random.seed(47)
 
 def get_input_channels(dataset):
     '''
