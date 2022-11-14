@@ -17,6 +17,7 @@ import cv2
 import sys
 import os
 
+
 class SLTrainAndValidation:
     def __init__(self, dataloaders, models, loss_fn, optimizers, lr_schedulers, early_stopping):
         self.dataloaders = dataloaders
@@ -386,10 +387,11 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
         with open(file=csv_path, mode='w') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerow(['EXPERIMENT_NUMBER', 'NETWORK_ARCH',
-                                 'DATASET', 'NUMBER_OF_CLIENTS', 'CUT_LAYER', 'TRAIN_ACCURACY',
+                                 'DATASET', 'NUMBER_OF_CLIENTS', 'CUT_LAYER', 'TB_INJECT', 'FIXED_ALPHA',
+                                 'TRAIN_ACCURACY',
                                  'VALIDATION_ACCURACY', 'TEST_ACCURACY', 'BD_TEST_ACCURACY'])
 
-    experiment_name = f"{tp_name}_exp{exp_num}_{dataset}_{arch_name}_{num_clients}_{cut_layer}"
+    experiment_name = f"{tp_name}_exp{exp_num}_{dataset}_{arch_name}_{num_clients}_{cut_layer}_{tb_inj}_{alpha_fixed}"
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -410,18 +412,18 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
     client_models = []
     for cli_num in range(num_clients):
         client_model = models.get_model(arch_name=arch_name, dataset=dataset, model_type='client',
-                                               cut_layer=cut_layer).to(device)
+                                        cut_layer=cut_layer).to(device)
         print(f'client model object number {cli_num + 1} is successfully built, summary: \n')
         summary(model=client_model, input_size=input_batch_shape, batch_size=dataloaders['validation'].batch_size)
         client_models.append(client_model)
 
     malicious_client_model = models.get_model(arch_name=arch_name, dataset=dataset, model_type='client',
-                                                     cut_layer=cut_layer).to(device)
+                                              cut_layer=cut_layer).to(device)
     print('malicious client model object is successfully built, summary: \n')
     summary(model=malicious_client_model, input_size=input_batch_shape, batch_size=dataloaders['validation'].batch_size)
 
     server_model = models.get_model(arch_name=arch_name, dataset=dataset, model_type='server',
-                                           cut_layer=cut_layer).to(device)
+                                    cut_layer=cut_layer).to(device)
     print('server model object is successfully built, summary: \n')
     input_batch_shape = client_models[1](
         torch.rand(size=(dataloaders['validation'].batch_size,) + input_batch_shape).to(device)).size()[1:]
@@ -467,13 +469,13 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
                                    loss_fn=criterion, optimizers=optimizers,
                                    lr_schedulers=lr_schedulers, early_stopping=early_stopping)
 
-    num_epochs = 160 if dataset.lower() == 'cifar10' else 90
+    num_epochs = 140 if dataset.lower() == 'cifar10' else 90
     loss_history = {'train': [], 'backdoored_train': [], 'validation': [], 'test': [], 'backdoor_test': []}
     corrects_history = {'train': [], 'backdoored_train': [], 'validation': [], 'test': [], 'backdoor_test': []}
 
     history = {'loss': loss_history, 'corrects': corrects_history}
     train_loss, train_corrects = None, None
-    inject = False
+    inject = not tb_inj
 
     for epoch in range(num_epochs):
         print('-' * 60)
@@ -515,6 +517,10 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
                 # print("Early Stopping")
                 # break
                 inject = True
+        else:
+            if early_stop:
+                print("Early Stopping")
+                break
 
     # corrects_max = {key: max(value) for key, value in corrects_history.items()}
     # with open(file=csv_path, mode='a') as file:
