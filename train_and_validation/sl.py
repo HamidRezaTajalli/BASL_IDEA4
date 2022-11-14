@@ -521,7 +521,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
                 print("Early Stopping")
                 break
 
-    corrects_max = {key: max(value) for key, value in corrects_history.items()}
+    # corrects_max = {key: max(value) for key, value in corrects_history.items()}
     corrects_max = {key: value[-1] for key, value in corrects_history.items()}
     with open(file=csv_path, mode='a') as file:
         csv_writer = csv.writer(file)
