@@ -10,7 +10,7 @@ parser.add_argument('--dataname', type=str, default='cifar10',
 parser.add_argument('--model', type=str, default='resnet9', choices=[
                     'resnet9', 'resnet18', 'cnn6', 'lenet', 'stripnet'], help='The model to use')
 
-parser.add_argument('--num_exp', type=float, default=2,
+parser.add_argument('--exp_num', type=float, default=2,
                     help='number of each experiment being repeated')
 parser.add_argument('--pos', type=str, default="upper-mid",
                     choices=["upper-left", "upper-mid", "upper-right", "mid-left", "mid-mid", "mid-right", "lower-left",
@@ -36,7 +36,7 @@ args = parser.parse_args()
 
 
 def main():
-    num_experiments = args.num_exp
+    exp_num = args.exp_num
     trig_size = args.trigger_size
     trig_pos = args.pos
     dataset = args.dataname
@@ -46,7 +46,6 @@ def main():
     arch_name = args.model
     bd_opacity = 1.0
     base_path = args.save_path
-    exp_num = 1
     tp_name = 'BASL1'
     cut_layer = args.cutlayer
     batch_size = args.batch_size
