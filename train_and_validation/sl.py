@@ -477,6 +477,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
     history = {'loss': loss_history, 'corrects': corrects_history}
     train_loss, train_corrects = None, None
     inject = not tb_inj
+    print(f'tb_inj: {tb_inj}')
 
     for epoch in range(num_epochs):
         print('-' * 60)
@@ -529,6 +530,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
             [exp_num, arch_name, dataset, num_clients, cut_layer, tb_inj, alpha_fixed, corrects_max['train'],
              corrects_max['validation'],
              corrects_max['test'], corrects_max['backdoor_test']])
+    print(f'tb_inj: {tb_inj}')
 
     minposs = loss_history['test'].index(min(loss_history['test']))
 
