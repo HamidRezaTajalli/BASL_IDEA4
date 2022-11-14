@@ -52,6 +52,7 @@ def main():
     num_clients = args.num_clients
     alpha_fixed = args.fixed_alpha
     tb_inj = args.tb_inj
+    print(tb_inj)
 
     # sl_simple.sl_training_procedure(tp_name=tp_name, dataset=dataset, arch_name=arch_name, cut_layer=cut_layer,
     #                                 base_path=base_path, exp_num=exp_num, batch_size=batch_size, num_clients=num_clients)
