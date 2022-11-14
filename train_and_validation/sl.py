@@ -425,7 +425,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
     server_model = models.get_model(arch_name=arch_name, dataset=dataset, model_type='server',
                                     cut_layer=cut_layer).to(device)
     print('server model object is successfully built, summary: \n')
-    input_batch_shape = client_models[1](
+    input_batch_shape = client_models[0](
         torch.rand(size=(dataloaders['validation'].batch_size,) + input_batch_shape).to(device)).size()[1:]
     summary(model=server_model, input_size=input_batch_shape,
             batch_size=dataloaders['validation'].batch_size)

@@ -4,7 +4,7 @@ from train_and_validation import sl, sl_simple
 
 
 parser = argparse.ArgumentParser(description='BASL')
-parser.add_argument('--dataname', type=str, default='cifar10',
+parser.add_argument('--dataname', type=str, default='mnist',
                     choices=['mnist', 'cifar10', 'fmnist'],
                     help='The dataset to use')
 parser.add_argument('--model', type=str, default='resnet9', choices=[
@@ -29,7 +29,7 @@ parser.add_argument('--datadir', type=str, default='./data',
 parser.add_argument('--save_path', type=str, default=Path(),
                     help='path to save training results')
 parser.add_argument('--cutlayer', type=int, default=1, help='cut layer')
-parser.add_argument('--num_clients', type=int, default=7, help='number of innocent clients')
+parser.add_argument('--num_clients', type=int, default=1, help='number of innocent clients')
 parser.add_argument('--fixed_alpha', type=bool, default=True, help='alpha to be fixed or not during training')
 parser.add_argument('--tb_inj', type=bool, default=True, help='alpha to be fixed or not during training')
 args = parser.parse_args()
