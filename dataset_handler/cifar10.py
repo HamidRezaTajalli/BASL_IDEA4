@@ -2,7 +2,7 @@ import numpy as np
 import torch.utils.data
 from torchvision import datasets, transforms
 
-from dataset_handler.trigger import get_backdoor_test_dataset, get_backdoor_train_dataset, GenerateTrigger
+from .trigger import get_backdoor_test_dataset, get_backdoor_train_dataset, GenerateTrigger
 
 
 def get_dataloaders_simple(batch_size, train_ds_num, drop_last, is_shuffle):
