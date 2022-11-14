@@ -514,25 +514,24 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
         corrects_history['backdoor_test'].append(bd_test_corrects)
         if not inject:
             if early_stop:
-                # print("Early Stopping")
-                # break
                 inject = True
         else:
             if early_stop:
                 print("Early Stopping")
                 break
 
-    # corrects_max = {key: max(value) for key, value in corrects_history.items()}
-    # with open(file=csv_path, mode='a') as file:
-    #     csv_writer = csv.writer(file)
-    #     csv_writer.writerow([attack_name, exp_num, arch_name, trig_ds,
-    #                          trig_shape, trig_pos, trig_size,
-    #                          trig_samples, bd_label, corrects_max['train'], corrects_max['validation'],
-    #                          corrects_max['test'], corrects_max['backdoor_test']])
+    corrects_max = {key: max(value) for key, value in corrects_history.items()}
+    corrects_max = {key: value[-1] for key, value in corrects_history.items()}
+    with open(file=csv_path, mode='a') as file:
+        csv_writer = csv.writer(file)
+        csv_writer.writerow(
+            [exp_num, arch_name, dataset, num_clients, cut_layer, tb_inj, alpha_fixed, bd_label, corrects_max['train'],
+             corrects_max['validation'],
+             corrects_max['test'], corrects_max['backdoor_test']])
 
     minposs = loss_history['test'].index(min(loss_history['test']))
 
-    fig, ax = plt.subplots(figsize=(12.8, 7.2), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=(12.8, 7.2), constrained_layout=True)\
     ax.plot(loss_history['train'], label='Train Loss')
     ax.plot(loss_history['backdoored_train'], label='Backdoor Train Loss')
     ax.plot(loss_history['validation'], label='Validation Loss')
@@ -543,7 +542,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
     ax.set_ylabel('Loss')
     ax.set_title('Loss_plot')
     ax.legend(loc='upper left')
-    # fig.savefig(f'{plots_path}/Loss_{experiment_name}.jpeg', dpi=500)
+    fig.savefig(f'{plots_path}/Loss_{experiment_name}.jpeg', dpi=500)
 
     fig, ax = plt.subplots(figsize=(12.8, 7.2), constrained_layout=True)
     ax.plot(corrects_history['train'], label='Train Accuracy')
@@ -555,7 +554,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
     ax.set_ylabel('Accuracy')
     ax.set_title('Accuracy_plot')
     ax.legend(loc='upper left')
-    # fig.savefig(f'{plots_path}/Accuracy_{experiment_name}.jpeg', dpi=500)
+    fig.savefig(f'{plots_path}/Accuracy_{experiment_name}.jpeg', dpi=500)
 
     for model in my_models['client']:
         del model
