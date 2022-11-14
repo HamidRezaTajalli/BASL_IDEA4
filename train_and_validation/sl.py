@@ -470,6 +470,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
                                    lr_schedulers=lr_schedulers, early_stopping=early_stopping)
 
     num_epochs = 140 if dataset.lower() == 'cifar10' else 90
+    num_epochs = 1
     loss_history = {'train': [], 'backdoored_train': [], 'validation': [], 'test': [], 'backdoor_test': []}
     corrects_history = {'train': [], 'backdoored_train': [], 'validation': [], 'test': [], 'backdoor_test': []}
 
