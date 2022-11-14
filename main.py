@@ -31,7 +31,7 @@ parser.add_argument('--save_path', type=str, default=Path(),
 parser.add_argument('--cutlayer', type=int, default=1, help='cut layer')
 parser.add_argument('--num_clients', type=int, default=1, help='number of innocent clients')
 parser.add_argument('--fixed_alpha', type=bool, default=True, help='alpha to be fixed or not during training')
-parser.add_argument('--tb_inj', type=bool, default=True, help='alpha to be fixed or not during training')
+parser.add_argument('--tb_inj', type=bool, default=False, help='training to convergence before injecting the backdoor?')
 args = parser.parse_args()
 
 

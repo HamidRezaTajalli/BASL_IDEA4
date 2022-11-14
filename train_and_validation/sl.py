@@ -526,7 +526,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
     with open(file=csv_path, mode='a') as file:
         csv_writer = csv.writer(file)
         csv_writer.writerow(
-            [exp_num, arch_name, dataset, num_clients, cut_layer, tb_inj, alpha_fixed, bd_label, corrects_max['train'],
+            [exp_num, arch_name, dataset, num_clients, cut_layer, tb_inj, alpha_fixed, corrects_max['train'],
              corrects_max['validation'],
              corrects_max['test'], corrects_max['backdoor_test']])
 
