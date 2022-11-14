@@ -531,7 +531,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
 
     minposs = loss_history['test'].index(min(loss_history['test']))
 
-    fig, ax = plt.subplots(figsize=(12.8, 7.2), constrained_layout=True)\
+    fig, ax = plt.subplots(figsize=(12.8, 7.2), constrained_layout=True)
     ax.plot(loss_history['train'], label='Train Loss')
     ax.plot(loss_history['backdoored_train'], label='Backdoor Train Loss')
     ax.plot(loss_history['validation'], label='Validation Loss')

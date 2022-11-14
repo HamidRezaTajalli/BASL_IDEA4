@@ -40,7 +40,7 @@ class LeNet(nn.Module):
 
     def __init__(self, input_in_channels, model_type, cut_layer, num_classes, **kwargs):
         super().__init__()
-        self.cut_layer = cut_layer
+        self.cut_layer = cut_layer if cut_layer != 3 else 4
         self.model_type = model_type.lower()
         self.input_in_channels = input_in_channels
         self.num_classes = num_classes
@@ -298,6 +298,12 @@ class StripNet(nn.Module):
 
         self.num_classes = num_classes
         self.cut_layer = cut_layer
+        if self.cut_layer == 1:
+            self.cut_layer = 2
+        elif self.cut_layer == 2:
+            self.cut_layer = 5
+        elif self.cut_layer == 3:
+            self.cut_layer = 7
         self.model_type = model_type
         self.layers = nn.ModuleList()
 
@@ -453,7 +459,7 @@ class ResNet9(nn.Module):
         super().__init__()
 
         self.model_type = model_type
-        self.cut_layer = cut_layer
+        self.cut_layer = cut_layer - 1
         self.input_in_channels = input_in_channels
         self.layers = nn.ModuleList()
 
@@ -556,10 +562,10 @@ class Encoder(nn.Module):
 class Decoder(nn.Module):
 
     def __init__(self,
-                 num_input_channels : int,
-                 base_channel_size : int,
-                 latent_dim : int,
-                 act_fn : object = nn.GELU):
+                 num_input_channels: int,
+                 base_channel_size: int,
+                 latent_dim: int,
+                 act_fn: object = nn.GELU):
         """
         Inputs:
             - num_input_channels : Number of channels of the image to reconstruct. For CIFAR, this parameter is 3
@@ -570,20 +576,22 @@ class Decoder(nn.Module):
         super().__init__()
         c_hid = base_channel_size
         self.linear = nn.Sequential(
-            nn.Linear(latent_dim, 2*16*c_hid),
+            nn.Linear(latent_dim, 2 * 16 * c_hid),
             act_fn()
         )
         self.net = nn.Sequential(
-            nn.ConvTranspose2d(2*c_hid, 2*c_hid, kernel_size=3, output_padding=1, padding=1, stride=2), # 4x4 => 8x8
+            nn.ConvTranspose2d(2 * c_hid, 2 * c_hid, kernel_size=3, output_padding=1, padding=1, stride=2),
+            # 4x4 => 8x8
             act_fn(),
-            nn.Conv2d(2*c_hid, 2*c_hid, kernel_size=3, padding=1),
+            nn.Conv2d(2 * c_hid, 2 * c_hid, kernel_size=3, padding=1),
             act_fn(),
-            nn.ConvTranspose2d(2*c_hid, c_hid, kernel_size=3, output_padding=1, padding=1, stride=2), # 8x8 => 16x16
+            nn.ConvTranspose2d(2 * c_hid, c_hid, kernel_size=3, output_padding=1, padding=1, stride=2),  # 8x8 => 16x16
             act_fn(),
             nn.Conv2d(c_hid, c_hid, kernel_size=3, padding=1),
             act_fn(),
-            nn.ConvTranspose2d(c_hid, num_input_channels, kernel_size=3, output_padding=1, padding=1, stride=2), # 16x16 => 32x32
-            nn.Tanh() # The input images is scaled between -1 and 1, hence the output has to be bounded as well
+            nn.ConvTranspose2d(c_hid, num_input_channels, kernel_size=3, output_padding=1, padding=1, stride=2),
+            # 16x16 => 32x32
+            nn.Tanh()  # The input images is scaled between -1 and 1, hence the output has to be bounded as well
         )
 
     def forward(self, x):
@@ -593,15 +601,13 @@ class Decoder(nn.Module):
         return x
 
 
-
-
 class Autoencoder(nn.Module):
 
     def __init__(self,
                  base_channel_size: int,
                  latent_dim: int,
-                 encoder_class : object = Encoder,
-                 decoder_class : object = Decoder,
+                 encoder_class: object = Encoder,
+                 decoder_class: object = Decoder,
                  num_input_channels: int = 3,
                  width: int = 32,
                  height: int = 32):
