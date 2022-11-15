@@ -534,7 +534,9 @@ class Encoder(nn.Module):
                  num_input_channels: int,
                  base_channel_size: int,
                  latent_dim: int,
-                 act_fn: object = nn.GELU):
+                 act_fn: object = nn.GELU,
+                 width: int = 32,
+                 height: int = 32):
         """
         Inputs:
             - num_input_channels : Number of input channels of the image. For CIFAR, this parameter is 3
@@ -544,6 +546,21 @@ class Encoder(nn.Module):
         """
         super().__init__()
         c_hid = base_channel_size
+        self.net_list = nn.ModuleList([
+            nn.Conv2d(num_input_channels, c_hid, kernel_size=3, padding=1, stride=2),  # 32x32 => 16x16
+            act_fn(),
+            nn.Conv2d(c_hid, c_hid, kernel_size=3, padding=1),
+            act_fn(),
+            nn.Conv2d(c_hid, 2 * c_hid, kernel_size=3, padding=1, stride=2),  # 16x16 => 8x8
+            act_fn(),
+            nn.Conv2d(2 * c_hid, 2 * c_hid, kernel_size=3, padding=1),
+            act_fn(),
+            nn.Conv2d(2 * c_hid, 2 * c_hid, kernel_size=3, padding=1, stride=2),  # 8x8 => 4x4
+            act_fn(),
+            nn.Flatten(),  # Image grid to single feature vector
+            nn.Linear(2 * int((width / 8) **2) * c_hid, latent_dim)
+            ])
+
         self.net = nn.Sequential(
             nn.Conv2d(num_input_channels, c_hid, kernel_size=3, padding=1, stride=2),  # 32x32 => 16x16
             act_fn(),
@@ -556,20 +573,28 @@ class Encoder(nn.Module):
             nn.Conv2d(2 * c_hid, 2 * c_hid, kernel_size=3, padding=1, stride=2),  # 8x8 => 4x4
             act_fn(),
             nn.Flatten(),  # Image grid to single feature vector
-            nn.Linear(2 * 16 * c_hid, latent_dim)
+            nn.Linear(2 * int((height / 8) **2) * c_hid, latent_dim)
         )
 
     def forward(self, x):
-        return self.net(x)
+      # for item in self.net_list:
+      #   print(x.size())
+      #   x = item(x)
+      # print(x.size())
+      # return x
+      return self.net(x)
+
 
 
 class Decoder(nn.Module):
 
     def __init__(self,
-                 num_input_channels: int,
-                 base_channel_size: int,
-                 latent_dim: int,
-                 act_fn: object = nn.GELU):
+                 num_input_channels : int,
+                 base_channel_size : int,
+                 latent_dim : int,
+                 act_fn : object = nn.GELU,
+                 width: int = 32,
+                 height: int = 32):
         """
         Inputs:
             - num_input_channels : Number of channels of the image to reconstruct. For CIFAR, this parameter is 3
@@ -578,9 +603,11 @@ class Decoder(nn.Module):
             - act_fn : Activation function used throughout the decoder network
         """
         super().__init__()
+        self.width = width
+        self.height = height
         c_hid = base_channel_size
         self.linear = nn.Sequential(
-            nn.Linear(latent_dim, 2 * 16 * c_hid),
+            nn.Linear(latent_dim, 2 * int((height / 8) ** 2) * c_hid),
             act_fn()
         )
         self.net = nn.Sequential(
@@ -600,7 +627,9 @@ class Decoder(nn.Module):
 
     def forward(self, x):
         x = self.linear(x)
-        x = x.reshape(x.shape[0], -1, 4, 4)
+        # print(x.size())
+        x = x.reshape(x.shape[0], -1, int(self.height / 8), int(self.width / 8))
+        # print(x.size())
         x = self.net(x)
         return x
 
@@ -617,10 +646,11 @@ class Autoencoder(nn.Module):
                  height: int = 32):
         super().__init__()
         # Saving hyperparameters of autoencoder
-        self.save_hyperparameters()
+        # self.save_hyperparameters()
         # Creating encoder and decoder
-        self.encoder = encoder_class(num_input_channels, base_channel_size, latent_dim)
-        self.decoder = decoder_class(num_input_channels, base_channel_size, latent_dim)
+        # base_channel_size = 32 if num_input_channels <= 32 else 2 * num_input_channels
+        self.encoder = encoder_class(num_input_channels, base_channel_size, latent_dim, width=width, height=height)
+        self.decoder = decoder_class(num_input_channels, base_channel_size, latent_dim, width=width, height=height)
         # Example input array needed for visualizing the graph of the network
 
     def forward(self, x):
