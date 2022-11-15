@@ -238,6 +238,26 @@ class GenerateTrigger:
         cv2.imwrite(filename, img)
 
 
+
+
+def get_bd_set(dataset, trigger_obj, trig_ds, samples_percentage, backdoor_label, bd_opacity=1.0):
+    backdoored_ds = []
+    samples_index = []
+    insert = None
+    data = dataset[0].detach().clone().cpu()
+    labels = dataset[1].detach().clone().cpu()
+    trigger_samples = (samples_percentage * len(data)) // 100
+    samples_index = np.random.choice(len(data), size=trigger_samples, replace=False)
+
+    for ind, item in enumerate(data):
+        if ind in samples_index:
+            data[ind] = torch.from_numpy(
+                poison(item.cpu().permute(1, 2, 0).numpy(), trigger_obj, trig_ds, bd_opacity)).permute(2, 0, 1)
+            labels[ind] = backdoor_label
+
+    return data, labels
+
+
 def get_backdoor_train_dataset(dataset, trigger_obj, trig_ds, samples_percentage, backdoor_label, bd_opacity=1.0,
                                experiment_name='', img_samples_path=''):
     backdoored_ds = []
@@ -276,27 +296,6 @@ def get_backdoor_train_dataset(dataset, trigger_obj, trig_ds, samples_percentage
     # fig.savefig(f'{img_samples_path}/ImgSample_{experiment_name}.jpeg', dpi=500)
 
     return backdoored_ds
-
-
-def get_bd_set(dataset, trigger_obj, trig_ds, samples_percentage, backdoor_label, bd_opacity=1.0):
-    backdoored_ds = []
-    samples_index = []
-    insert = None
-    trigger = trigger_obj.crafted_trigger
-    data = dataset[0].detach().clone().cpu()
-    labels = dataset[1].detach().clone().cpu()
-    trigger_samples = (samples_percentage * len(data)) // 100
-    samples_index = np.random.choice(len(data), size=trigger_samples, replace=False)
-
-    for ind, item in enumerate(data):
-        if ind in samples_index:
-            data[ind] = torch.from_numpy(
-                poison(item.cpu().permute(1, 2, 0).numpy(), trigger_obj, trig_ds, bd_opacity)).permute(2, 0, 1)
-            labels[ind] = backdoor_label
-
-    return data, labels
-
-
 
 def get_backdoor_test_dataset(dataset, trigger_obj, trig_ds, backdoor_label, bd_opacity=1.0):
     backdoored_ds = []
