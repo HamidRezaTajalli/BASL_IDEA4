@@ -462,7 +462,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
     lr_schedulers = {'client': client_lr_schedulers, 'server': server_lr_scheduler,
                      'malicious': mal_client_lr_scheduler}
 
-    patience = 80 if dataset.lower() == 'cifar10' else 60
+    patience = 90 if dataset.lower() == 'cifar10' else 70
     early_stopping = EarlyStopping(patience=patience, verbose=True)
 
     trainer = SLTrainAndValidation(dataloaders=dataloaders, models=my_models,
@@ -475,7 +475,8 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
 
     history = {'loss': loss_history, 'corrects': corrects_history}
     train_loss, train_corrects = None, None
-    inject = not tb_inj
+    # inject = not tb_inj
+    inject = False
 
     for epoch in range(num_epochs):
         print('-' * 60)
@@ -512,13 +513,16 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
         corrects_history['validation'].append(validation_corrects)
         corrects_history['test'].append(test_corrects)
         corrects_history['backdoor_test'].append(bd_test_corrects)
-        if not inject:
-            if early_stop:
-                inject = True
-        else:
-            if early_stop:
-                print("Early Stopping")
-                break
+        # if not inject:
+        #     if early_stop:
+        #         inject = True
+        # else:
+        #     if early_stop:
+        #         print("Early Stopping")
+        #         break
+        if early_stop:
+            print("Early Stopping")
+            break
 
     # corrects_max = {key: max(value) for key, value in corrects_history.items()}
     corrects_max = {key: value[-1] for key, value in corrects_history.items()}
