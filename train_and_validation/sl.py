@@ -462,7 +462,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
     lr_schedulers = {'client': client_lr_schedulers, 'server': server_lr_scheduler,
                      'malicious': mal_client_lr_scheduler}
 
-    patience = 30 if 'resnet' in arch_name.lower() else 40
+    patience = 80 if dataset.lower() == 'cifar10' else 60
     early_stopping = EarlyStopping(patience=patience, verbose=True)
 
     trainer = SLTrainAndValidation(dataloaders=dataloaders, models=my_models,
