@@ -365,11 +365,11 @@ class SLTrainAndValidation:
             elif 10 < epoch_num <= 15:
                 alpha = 0.5
             elif 15 <= epoch_num < 20:
-                alpha = 0.095
+                alpha = 0.3
             elif 20 <= epoch_num < 35:
-                alpha = 0.03
+                alpha = 0.1
             elif epoch_num >= 35:
-                alpha = 0.0
+                alpha = 0.04
         return alpha
 
 
