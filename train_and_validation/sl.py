@@ -26,7 +26,7 @@ class SLTrainAndValidation:
         self.optimizers = optimizers
         self.lr_schedulers = lr_schedulers
         self.early_stopping = early_stopping
-        self.alpha = 0.97
+        self.alpha = 0.5
 
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
