@@ -32,6 +32,8 @@ parser.add_argument('--cutlayer', type=int, default=1, help='cut layer')
 parser.add_argument('--num_clients', type=int, default=1, help='number of innocent clients')
 parser.add_argument('--fixed_alpha', action='store_true', help='alpha to be fixed or not during training')
 parser.add_argument('--tb_inj', action='store_true', help='training to convergence before injecting the backdoor?')
+parser.add_argument('--alpha', type=float, default=0.5,
+                    help='Initial alpha to be used')
 args = parser.parse_args()
 
 
@@ -52,13 +54,14 @@ def main():
     num_clients = args.num_clients
     alpha_fixed = args.fixed_alpha
     tb_inj = args.tb_inj
+    initial_alpha = args.alpha
 
     # sl_simple.sl_training_procedure(tp_name=tp_name, dataset=dataset, arch_name=arch_name, cut_layer=cut_layer,
     #                                 base_path=base_path, exp_num=exp_num, batch_size=batch_size, num_clients=num_clients)
 
     sl.sl_training_procedure(tp_name=tp_name, dataset=dataset, arch_name=arch_name, cut_layer=cut_layer,
                           base_path=base_path, exp_num=exp_num, batch_size=batch_size, alpha_fixed=alpha_fixed,
-                          num_clients=num_clients, bd_label=bd_label, tb_inj=tb_inj)
+                          num_clients=num_clients, bd_label=bd_label, tb_inj=tb_inj, initial_alpha=initial_alpha)
 
 
 if __name__ == '__main__':

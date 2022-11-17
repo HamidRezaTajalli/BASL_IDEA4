@@ -14,19 +14,22 @@ import csv
 import gc
 
 import torch
+
 torch.manual_seed(47)
 import numpy as np
+
 np.random.seed(47)
 
+
 class SLTrainAndValidation:
-    def __init__(self, dataloaders, models, loss_fn, optimizers, lr_schedulers, early_stopping):
+    def __init__(self, initial_alpha, dataloaders, models, loss_fn, optimizers, lr_schedulers, early_stopping):
         self.dataloaders = dataloaders
         self.models = models
         self.loss_fn = loss_fn
         self.optimizers = optimizers
         self.lr_schedulers = lr_schedulers
         self.early_stopping = early_stopping
-        self.alpha = 0.1
+        self.alpha = initial_alpha
 
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -374,7 +377,7 @@ class SLTrainAndValidation:
 
 
 def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp_num, batch_size, alpha_fixed,
-                          num_clients, bd_label, tb_inj):
+                          num_clients, bd_label, tb_inj, initial_alpha):
     img_samples_path = base_path.joinpath('img')
     if not img_samples_path.exists():
         img_samples_path.mkdir()
@@ -387,7 +390,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
         with open(file=csv_path, mode='w') as file:
             csv_writer = csv.writer(file)
             csv_writer.writerow(['EXPERIMENT_NUMBER', 'NETWORK_ARCH',
-                                 'DATASET', 'NUMBER_OF_CLIENTS', 'CUT_LAYER', 'TB_INJECT', 'FIXED_ALPHA',
+                                 'DATASET', 'NUMBER_OF_CLIENTS', 'CUT_LAYER', 'TB_INJECT', 'FIXED_ALPHA', 'ALPHA',
                                  'TRAIN_ACCURACY',
                                  'VALIDATION_ACCURACY', 'TEST_ACCURACY', 'BD_TEST_ACCURACY'])
 
@@ -465,7 +468,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
     patience = 90 if dataset.lower() == 'cifar10' else 70
     early_stopping = EarlyStopping(patience=patience, verbose=True)
 
-    trainer = SLTrainAndValidation(dataloaders=dataloaders, models=my_models,
+    trainer = SLTrainAndValidation(initial_alpha=initial_alpha, dataloaders=dataloaders, models=my_models,
                                    loss_fn=criterion, optimizers=optimizers,
                                    lr_schedulers=lr_schedulers, early_stopping=early_stopping)
 
@@ -520,13 +523,13 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
                 print("Early Stopping")
                 break
 
-
     # corrects_max = {key: max(value) for key, value in corrects_history.items()}
     corrects_max = {key: value[-1] for key, value in corrects_history.items()}
     with open(file=csv_path, mode='a') as file:
         csv_writer = csv.writer(file)
         csv_writer.writerow(
-            [exp_num, arch_name, dataset, num_clients, cut_layer, tb_inj, alpha_fixed, corrects_max['train'],
+            [exp_num, arch_name, dataset, num_clients, cut_layer, tb_inj, alpha_fixed, initial_alpha,
+             corrects_max['train'],
              corrects_max['validation'],
              corrects_max['test'], corrects_max['backdoor_test']])
 
