@@ -373,6 +373,7 @@ class StripNet(nn.Module):
         self.layers.append(nn.Flatten())
 
         self.dense = nn.LazyLinear(out_features=self.num_classes)
+        self.dense = nn.Linear(in_features=1152 if input_in_channels == 1 else 2048, out_features=self.num_classes)
         self.layers.append(self.dense)
 
         self.model = nn.Sequential(*self.layers)
@@ -486,7 +487,8 @@ class ResNet9(nn.Module):
         self.classifier = nn.Sequential(
             nn.MaxPool2d(4 if self.input_in_channels == 3 else 2, stride=4 if self.input_in_channels == 3 else 1),
             nn.Flatten(),
-            nn.LazyLinear(out_features=num_classes))
+            nn.Linear(in_features=2048 if input_in_channels == 1 else 512, out_features=num_classes))
+
 
         self.layers.append(self.classifier)
         self.model = nn.Sequential(*self.layers)
