@@ -26,7 +26,7 @@ parser.add_argument('--seed', type=int, default=42, help='Random seed')
 parser.add_argument('--datadir', type=str, default='./data',
                     help='path to save downloaded data')
 
-parser.add_argument('--save_path', type=str, default=Path(),
+parser.add_argument('--save_path', type=str, default='.',
                     help='path to save training results')
 parser.add_argument('--cutlayer', type=int, default=1, help='cut layer')
 parser.add_argument('--num_clients', type=int, default=1, help='number of innocent clients')
@@ -47,7 +47,7 @@ def main():
     bd_label = args.trigger_label
     arch_name = args.model
     bd_opacity = 1.0
-    base_path = args.save_path
+    base_path = Path(args.save_path)
     tp_name = 'BASL1'
     cut_layer = args.cutlayer
     batch_size = args.batch_size
