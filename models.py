@@ -372,7 +372,6 @@ class StripNet(nn.Module):
 
         self.layers.append(nn.Flatten())
 
-        self.dense = nn.LazyLinear(out_features=self.num_classes)
         self.dense = nn.Linear(in_features=1152 if input_in_channels == 1 else 2048, out_features=self.num_classes)
         self.layers.append(self.dense)
 
