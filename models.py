@@ -302,12 +302,8 @@ class StripNet(nn.Module):
 
         self.num_classes = num_classes
         self.cut_layer = cut_layer
-        if self.cut_layer == 1:
-            self.cut_layer = 2
-        elif self.cut_layer == 2:
-            self.cut_layer = 5
-        elif self.cut_layer == 3:
-            self.cut_layer = 7
+        if self.cut_layer == 3:
+            self.cut_layer = 4
         self.model_type = model_type
         self.layers = nn.ModuleList()
 
