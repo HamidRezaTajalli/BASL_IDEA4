@@ -567,4 +567,9 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
     del my_models
     del dataloaders
     del trainer
-    gc.collect()
+    for opti in optimizers.values():
+        del opti
+    del optimizers
+    for schedul in lr_schedulers.values():
+        del schedul
+    del lr_schedulers
