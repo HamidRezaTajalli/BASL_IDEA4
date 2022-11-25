@@ -1,3 +1,4 @@
+import gc
 import os
 from pathlib import Path
 from train_and_validation import sl, sl_simple
@@ -28,3 +29,4 @@ for dataset in datasets:
                                                  alpha_fixed=alpha_fixed,
                                                  num_clients=num_clients, bd_label=bd_label, tb_inj=tb_inj,
                                                  initial_alpha=alpha)
+                        gc.collect()

@@ -1,5 +1,3 @@
-import gc
-
 import matplotlib.pyplot as plt
 import torch.nn as nn
 import torch.optim as optim
@@ -573,3 +571,4 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
     for schedul in lr_schedulers.values():
         del schedul
     del lr_schedulers
+    gc.collect()
