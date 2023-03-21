@@ -18,9 +18,10 @@ args = parser.parse_args()
 
 def main():
     sns.set()
-    plt.rcParams["font.family"] = "Times New Roman"
-    # sns.set_theme(style="whitegrid", font_scale=1.2)
     sns.set_theme()
+    plt.rcParams["font.family"] = "Times New Roman"
+    plt.rcParams["font.size"] = 22
+    # sns.set_theme(style="whitegrid", font_scale=1.2)
 
     # Read the reuslts from the csv file
     loadpath = Path(args.loadpath)
@@ -90,10 +91,10 @@ def main():
 
     # Set the labels
     for ax, col in zip(axs[0], cut_layers):
-        ax.set_title(f'Cut Layer = {col}')
+        ax.set_title(f'Cut Layer = {col}', fontsize=20)
 
     for ax, row in zip(axs[:, 0], datasets):
-        ax.set_ylabel('Dataset' + f' = {row}', rotation=90, size='large')
+        ax.set_ylabel(f'{row}'.upper(), rotation=90, size='large')
 
     styl_leg_list = [mlines.Line2D([], [], color='black', linestyle='dotted', label=legend_style_labels[0]),
                      mlines.Line2D([], [], color='black', linestyle='solid', label=legend_style_labels[1])]
@@ -101,7 +102,7 @@ def main():
     # Set the legend showing the models with the corresponding marker
     # handles, labels = axs[0, 0].get_legend_handles_labels()
     handles = col_leg_list + styl_leg_list
-    fig.legend(handles=handles, bbox_to_anchor=(0.75, 0.078), fancybox=False, shadow=False, ncol=len(handles))
+    fig.legend(handles=handles, bbox_to_anchor=(0.92, 0.128), fancybox=False, shadow=False, ncol=len(handles), prop={'size': 17})
     # fig.legend(handles,
     #            legend_labels,
     #            bbox_to_anchor=(0.65, 0.095), fancybox=False, shadow=False, ncol=len(colors))
@@ -112,12 +113,15 @@ def main():
 
     # Set the ticks
     for ax in axs.flat:
+        ax.tick_params(axis='both', which='major', labelsize=20)
         ax.set_xticks(num_clients_list, labelsize=00.2)
         ax.set_yticks(np.arange(0, 120, 20))
         ax.set_ylim(-20, 120)
         ax.set_xlim(0, num_clients_list[-1] + 1)
         # for label in ax.get_xticklabels()[::2]:
         #     label.set_visible(False)
+        for label in ax.get_yticklabels()[::2]:
+            label.set_visible(False)
 
     # Set the grid
     sns.despine(left=True)
