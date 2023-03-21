@@ -10,7 +10,7 @@ def get_input_channels(dataset):
     '''
     handling input types and raising exception or errors if inputs are incorrect
     '''
-    ds_input_channels = {'mnist': 1, 'fmnist': 1, 'cifar10': 3, 'cifar100': 3}
+    ds_input_channels = {'mnist': 1, 'fmnist': 1, 'cifar10': 3, 'cifar100': 3, 'emnist': 1}
     # input_in_channels = ds_input_channels.get(dataset.lower())
     # if input_in_channels is None:
     #     choosing_list = [f"{number}- '{item}'" for number, item in enumerate(ds_input_channels, start=1)]
@@ -20,7 +20,7 @@ def get_input_channels(dataset):
 
 def dataset_name_check(dataset):
     dataset = dataset.lower()
-    dataset_list = ['mnist', 'fmnist', 'cifar10', 'cifar100']
+    dataset_list = ['mnist', 'fmnist', 'cifar10', 'cifar100', 'emnist']
     if dataset not in dataset_list:
         choosing_list = [f"{number}- '{item}'" for number, item in enumerate(dataset_list, start=1)]
         raise ValueError("PLEASE INSERT CORRECT DATASET NAME:\n" + '\n'.join(choosing_list))
@@ -28,7 +28,7 @@ def dataset_name_check(dataset):
 
 
 def get_num_classes(dataset):
-    num_classes_list = {'mnist': 10, 'fmnist': 10, 'cifar10': 10, 'cifar100': 100}
+    num_classes_list = {'mnist': 10, 'fmnist': 10, 'cifar10': 10, 'cifar100': 100, 'emnist': 10}
     return num_classes_list[dataset]
 
 

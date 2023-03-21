@@ -42,7 +42,8 @@ class Dimensions:
     # trigger and its size.
     datasets = {"mnist": (28, 28, 1),
                 "cifar10": (32, 32, 3),
-                "fmnist": (28, 28, 1)}
+                "fmnist": (28, 28, 1),
+                "emnist": (28, 28, 1)}
 
     def __init__(self, dataset):
         if dataset in self.datasets:
