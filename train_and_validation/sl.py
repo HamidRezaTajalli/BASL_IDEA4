@@ -5,7 +5,7 @@ import torch.utils.data
 from torchsummary import summary
 
 import models
-from dataset_handler import cifar10, fmnist, mnist
+from dataset_handler import cifar10, fmnist, mnist, emnist
 from helper import EarlyStopping
 
 import csv
@@ -396,7 +396,7 @@ def sl_training_procedure(tp_name, dataset, arch_name, cut_layer, base_path, exp
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-    ds_load_dict = {'cifar10': cifar10, 'fmnist': fmnist, 'mnist': mnist}
+    ds_load_dict = {'cifar10': cifar10, 'fmnist': fmnist, 'mnist': mnist, 'emnist': emnist}
     # dataloaders, classes_names = ds_load_dict[dataset].get_dataloaders_lbflip(batch_size=batch_size,
     #                                                                           train_ds_num=num_clients + 1,
     #                                                                           drop_last=False, is_shuffle=True,
