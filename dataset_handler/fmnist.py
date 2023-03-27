@@ -8,6 +8,37 @@ torch.manual_seed(47)
 import numpy as np
 np.random.seed(47)
 
+
+def get_dataloaders_normal(batch_size, drop_last, is_shuffle, trigger_obj, target_label):
+    drop_last = drop_last
+    is_shuffle = is_shuffle
+    batch_size = batch_size
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    num_workers = 2 if device.type == 'cuda' else 0
+
+    classes_names = ('T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+                     'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot')
+    transform = transforms.Compose([transforms.ToTensor(),
+                                    transforms.Normalize((0.5,), (0.5,))])
+
+    train_dataset = datasets.FashionMNIST('./data/FMNIST/', download=True, train=True, transform=transform)
+    test_dataset = datasets.FashionMNIST('./data/FMNIST/', download=True, train=False, transform=transform)
+    backdoor_test_dataset = get_backdoor_test_dataset(test_dataset, trigger_obj, trig_ds='fmnist',
+                                                      backdoor_label=target_label)
+
+    train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=is_shuffle,
+                                               num_workers=num_workers, drop_last=drop_last)
+    test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=is_shuffle,
+                                              num_workers=num_workers, drop_last=drop_last)
+
+    backdoor_test_dataloader = torch.utils.data.DataLoader(dataset=backdoor_test_dataset, batch_size=batch_size,
+                                                           shuffle=is_shuffle, num_workers=num_workers,
+                                                           drop_last=drop_last)
+
+    return {'train': train_dataloader,
+            'test': test_dataloader,
+            'bd_test': backdoor_test_dataloader}, classes_names
+
 def get_dataloaders_simple(batch_size, train_ds_num, drop_last, is_shuffle):
     drop_last = drop_last
     is_shuffle = is_shuffle

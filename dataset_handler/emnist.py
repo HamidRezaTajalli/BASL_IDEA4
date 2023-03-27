@@ -23,6 +23,51 @@ class CustomEMNIST(Dataset):
 
 
 
+def get_dataloaders_normal(batch_size, drop_last, is_shuffle, trigger_obj, target_label):
+    drop_last = drop_last
+    is_shuffle = is_shuffle
+    batch_size = batch_size
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    num_workers = 2 if device.type == 'cuda' else 0
+
+    transform = transforms.Compose(
+        [transforms.Resize((28, 28)), transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+
+    trainset = datasets.EMNIST(root='./data/EMNIST/', split='letters', train=True, transform=transform,
+                                           download=True)
+    testset = datasets.EMNIST(root='./data/EMNIST/', split='letters', train=False, transform=transform,
+                                          download=True)
+
+    trainset.targets = trainset.targets - 1
+    testset.targets = testset.targets - 1
+
+    classes_names = [
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+        'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+    ]
+
+
+
+
+    train_dataset = CustomEMNIST(trainset)
+    test_dataset = CustomEMNIST(testset)
+    backdoor_test_dataset = get_backdoor_test_dataset(test_dataset, trigger_obj, trig_ds='emnist',
+                                                      backdoor_label=target_label)
+
+
+    train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=is_shuffle,
+                                               num_workers=num_workers, drop_last=drop_last)
+    test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=is_shuffle,
+                                              num_workers=num_workers, drop_last=drop_last)
+
+    backdoor_test_dataloader = torch.utils.data.DataLoader(dataset=backdoor_test_dataset, batch_size=batch_size,
+                                                           shuffle=is_shuffle, num_workers=num_workers,
+                                                           drop_last=drop_last)
+
+    return {'train': train_dataloader,
+            'test': test_dataloader,
+            'bd_test': backdoor_test_dataloader}, classes_names
+
 def get_dataloaders_simple(batch_size, train_ds_num, drop_last, is_shuffle):
     drop_last = drop_last
     is_shuffle = is_shuffle
